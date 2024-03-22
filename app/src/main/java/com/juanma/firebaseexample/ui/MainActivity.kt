@@ -1,8 +1,9 @@
-package com.juanma.firebaseexample
+package com.juanma.firebaseexample.ui
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -14,10 +15,14 @@ import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.ktx.analytics
 import com.google.firebase.ktx.Firebase
 import com.juanma.firebaseexample.ui.navigation.Navigation
+import com.juanma.firebaseexample.ui.screens.auth.loginscreen.LoginScreenViewModel
 import com.juanma.firebaseexample.ui.theme.FirebaseExampleTheme
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     //private lateinit var analytics: FirebaseAnalytics
+    private val loginViewModel: LoginScreenViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,8 +32,8 @@ class MainActivity : ComponentActivity() {
         setContent {
             FirebaseExampleTheme {
                 Navigation(
-                    this
-                    //analytics
+                    context = this,
+                    loginViewModel = loginViewModel
                 )
             }
         }

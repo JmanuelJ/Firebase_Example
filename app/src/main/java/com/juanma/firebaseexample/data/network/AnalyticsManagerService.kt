@@ -1,4 +1,4 @@
-package com.juanma.firebaseexample.utils
+package com.juanma.firebaseexample.data.network
 
 import android.content.Context
 import android.os.Bundle
@@ -6,7 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import com.google.firebase.analytics.FirebaseAnalytics
 
-class AnalyticsManager(context: Context) {
+class AnalyticsManagerService(context: Context) {
     private val firebaseAnalytics by lazy { FirebaseAnalytics.getInstance(context) }
 
     private fun logEvent(eventName: String, params: Bundle) {

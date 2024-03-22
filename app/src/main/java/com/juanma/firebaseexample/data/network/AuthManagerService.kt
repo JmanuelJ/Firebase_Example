@@ -1,4 +1,4 @@
-package com.juanma.firebaseexample.utils
+package com.juanma.firebaseexample.data.network
 
 import android.content.Context
 import android.content.Intent
@@ -16,21 +16,22 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.auth
 import com.juanma.firebaseexample.R
+import com.juanma.firebaseexample.data.response.AuthRes
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.tasks.await
+import javax.inject.Inject
 
-sealed class AuthRes<out T>{
-    data class Success<T>(val data: T): AuthRes<T>()
-    data class Error(val errorMessage: String): AuthRes<Nothing>()
-}
-
-class AuthManager(private val context: Context) {
-    private val auth: FirebaseAuth by lazy { Firebase.auth }
+class AuthManagerService @Inject constructor(
+    @ApplicationContext private val context: Context,
+    private val auth: FirebaseAuth
+) {
+    //private val auth: FirebaseAuth by lazy { Firebase.auth }
 
     private val signInClient = Identity.getSignInClient(context)
 
     suspend fun createUserWithEmailAndPassword(
         email: String,password: String
-    ): AuthRes<FirebaseUser?>{
+    ): AuthRes<FirebaseUser?> {
         return try{
             val authresult =  auth.signInWithEmailAndPassword(email, password).await()
             AuthRes.Success(authresult.user)
@@ -42,7 +43,7 @@ class AuthManager(private val context: Context) {
     suspend fun signInWithEmailAndPassword(
         email: String,
         password: String
-    ): AuthRes<FirebaseUser?>{
+    ): AuthRes<FirebaseUser?> {
         return try{
             val authResult = auth.signInWithEmailAndPassword(email,password).await()
             AuthRes.Success(authResult.user)
@@ -51,7 +52,7 @@ class AuthManager(private val context: Context) {
         }
     }
 
-    suspend fun signInAnonymously(): AuthRes<FirebaseUser?>{
+    suspend fun signInAnonymously(): AuthRes<FirebaseUser?> {
         return try {
             val result = auth.signInAnonymously().await()
 
@@ -62,7 +63,7 @@ class AuthManager(private val context: Context) {
         }
     }
 
-    suspend fun resetPassword(email: String): AuthRes<Unit>{
+    suspend fun resetPassword(email: String): AuthRes<Unit> {
         return try{
             auth.sendPasswordResetEmail(email).await()
             AuthRes.Success(Unit)

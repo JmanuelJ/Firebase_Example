@@ -53,16 +53,16 @@ import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.juanma.firebaseexample.R
+import com.juanma.firebaseexample.data.network.AnalyticsManagerService
 import com.juanma.firebaseexample.ui.navigation.Routes
 import com.juanma.firebaseexample.ui.screens.login.ContactScreen
 import com.juanma.firebaseexample.ui.screens.login.NotesScreen
-import com.juanma.firebaseexample.utils.AnalyticsManager
-import com.juanma.firebaseexample.utils.AuthManager
+import com.juanma.firebaseexample.util.AuthManager
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
-    analytics: AnalyticsManager,
+    analytics: AnalyticsManagerService,
     auth: AuthManager,
     navigation: NavController
 ) {
@@ -117,20 +117,17 @@ fun HomeScreen(
                         Spacer(modifier = Modifier.width(10.dp))
                         Column {
                             Text(
-                                text = if(!user?.displayName.isNullOrEmpty()) "Hola ${user?.displayName}" else "Bienvenidx",
+                                text = if(!user?.displayName.isNullOrEmpty()) "${user?.displayName}" else "Bienvenidx",
                                 fontSize = 20.sp,
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis
                             )
                             Log.i("AppD","${user?.email}")
                             Text(
-                                text = if(!user?.email.isNullOrEmpty()) "Hola ${user?.tenantId}" else "Anónimo",
+                                text = if(!user?.email.isNullOrEmpty()) "${user?.tenantId}" else "Anónimo",
                                 fontSize = 12.sp,
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis
-                            )
-                            Text(
-                                text = "Hola ${user?.email}"
                             )
                         }
                     }

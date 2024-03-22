@@ -1,6 +1,5 @@
-package com.juanma.firebaseexample.ui.screens.auth
+package com.juanma.firebaseexample.ui.screens.auth.loginscreen
 
-import android.content.Context
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -29,6 +28,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -47,66 +47,43 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.firebase.auth.GoogleAuthProvider
 import com.juanma.firebaseexample.R
+import com.juanma.firebaseexample.data.network.AnalyticsManagerService
+import com.juanma.firebaseexample.data.response.AuthRes
 import com.juanma.firebaseexample.ui.navigation.Routes
+import com.juanma.firebaseexample.ui.screens.auth.loginscreen.components.EmailPassSignIn
+import com.juanma.firebaseexample.ui.screens.auth.loginscreen.components.GoogleSignIn
 import com.juanma.firebaseexample.ui.theme.Purple40
-import com.juanma.firebaseexample.utils.AnalyticsManager
-import com.juanma.firebaseexample.utils.AuthManager
-import com.juanma.firebaseexample.utils.AuthRes
+import com.juanma.firebaseexample.util.AuthManager
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginScreen(
-    analytics: AnalyticsManager,
+    analytics: AnalyticsManagerService,
     auth: AuthManager,
-    navigation: NavController
+    navController: NavHostController,
+    loginViewModel: LoginScreenViewModel
 ) {
+    val email: String by loginViewModel.email.observeAsState(initial = "")
+    val password: String by loginViewModel.password.observeAsState(initial = "")
+    val scope = rememberCoroutineScope()
     analytics.logScreenView(screenName = Routes.Login.route)
 
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
+    EmailPassSignIn(
+        navController = navController,
+        analytics = analytics,
+        loginViewModel = loginViewModel
+    )
 
-    val context = LocalContext.current
-    val scope = rememberCoroutineScope()
-
-    val googleSignInLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.StartActivityForResult()){ result ->
-        when(val account = auth
-            .handleSingInResult(GoogleSignIn.getSignedInAccountFromIntent(result.data))){
-            is AuthRes.Error -> {
-                analytics.logError("Error SignIn: ${account.errorMessage}")
-                Toast
-                    .makeText(
-                        context,
-                        "Error: ${account.errorMessage}",
-                        Toast.LENGTH_SHORT).show()
-            }
-            is AuthRes.Success -> {
-                val credential = GoogleAuthProvider.getCredential(account.data.idToken, null)
-                scope.launch {
-                    val fireUser = auth.signInWithGoogleCredential(credential)
-                    if(fireUser != null){
-                        Toast.makeText(context, "Bienvenido", Toast.LENGTH_SHORT).show()
-                        navigation.navigate(Routes.Home.route){
-                            popUpTo(Routes.Login.route){
-                                inclusive = true
-                            }
-                        }
-                    }
-                }
-            }
-            else -> {
-                Toast
-                    .makeText(
-                        context,
-                        "Error desconocido",
-                        Toast.LENGTH_SHORT).show()
-            }
-        }
-    }
+    GoogleSignIn(
+        navController = navController,
+        analytics = analytics,
+        loginViewModel = loginViewModel
+    )
 
     Box(modifier = Modifier.fillMaxSize()) {
         ClickableText(
@@ -115,7 +92,7 @@ fun LoginScreen(
                 .align(Alignment.BottomCenter)
                 .padding(40.dp),
             onClick = {
-                navigation.navigate(Routes.SignUp.route)
+                navController.navigate(Routes.SignUp.route)
                 analytics.logButtonClicked("Click: No tienes una cuenta? Registrate")
             },
             style = TextStyle(
@@ -151,28 +128,19 @@ fun LoginScreen(
             label = { Text(text = "Correo electrónico") },
             value = email,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-            onValueChange = { email = it })
+            onValueChange = { loginViewModel.onEmailInput(it) })
         Spacer(modifier = Modifier.height(10.dp))
         TextField(
             label = { Text(text = "Contraseña") },
             value = password,
             visualTransformation = PasswordVisualTransformation(),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-            onValueChange = { password = it })
+            onValueChange = { loginViewModel.onPasswordInput(it) })
         Spacer(modifier = Modifier.height(20.dp))
         Box(modifier = Modifier.padding(40.dp, 0.dp, 40.dp, 0.dp)) {
             Button(
                 onClick = {
-                          scope.launch {
-                              emailPassSignIn(
-                                  email,
-                                  password,
-                                  auth,
-                                  analytics,
-                                  context,
-                                  navigation
-                              )
-                          }
+                    loginViewModel.login()
                 },
                 shape = RoundedCornerShape(50.dp),
                 modifier = Modifier
@@ -186,7 +154,7 @@ fun LoginScreen(
         ClickableText(
             text = AnnotatedString("¿Olvidaste tu contraseña?"),
             onClick = {
-                navigation.navigate(Routes.ForgotPassword.route) {
+                navController.navigate(Routes.ForgotPassword.route) {
                     popUpTo(Routes.Login.route) { inclusive = true }
                 }
                 analytics.logButtonClicked("Click: ¿Olvidaste tu contraseña")
@@ -206,9 +174,9 @@ fun LoginScreen(
         Spacer(modifier = Modifier.height(25.dp))
         SocialMediaButton(
             onClick = {
-                      scope.launch {
-                          incognitoSignIn(auth, analytics,context, navigation)
-                      }
+                scope.launch {
+                    incognitoSignIn(auth, analytics, navController)
+                }
             },
             text = "Continuar como invitado",
             icon = R.drawable.ic_incognito,
@@ -216,7 +184,7 @@ fun LoginScreen(
         )
         SocialMediaButton(
             onClick = {
-                      auth.signInWithGoogle(googleSignInLauncher)
+                loginViewModel.firebaseLauncher.value?.let { loginViewModel.signInGoogle(it) }
             },
             text = "Continuar con Google",
             icon = R.drawable.ic_google,
@@ -225,50 +193,21 @@ fun LoginScreen(
     }
 }
 
-private suspend fun emailPassSignIn(
-    email: String,
-    password: String,
-    auth: AuthManager,
-    analytics: AnalyticsManager,
-    context: Context,
-    navigation: NavController
-) {
-    if(email.isNotEmpty() && password.isNotEmpty()){
-        when(val result = auth.signInWithEmailAndPassword(email, password)){
-            is AuthRes.Error -> {
-                analytics.logButtonClicked("Error Signup: ${result.errorMessage}")
-                Toast.makeText(
-                    context,
-                    "Error Signup: ${result.errorMessage}",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-            is AuthRes.Success -> {
-                analytics.logButtonClicked("Click: Iniciar sesion correo & contraseña")
-                navigation.navigate(Routes.Home.route){
-                    popUpTo(Routes.Login.route){
-                        inclusive = true
-                    }
-                }
-            }
-        }
-    }
-}
 
 private suspend fun incognitoSignIn(
     auth: AuthManager,
-    analytics: AnalyticsManager,
-    context: Context,
+    analytics: AnalyticsManagerService,
     navigation: NavController
-){
-    when(val result = auth.signInAnonymously()){
+) {
+    when (val result = auth.signInAnonymously()) {
         is AuthRes.Error -> {
             analytics.logError("Error SignIn Incognito: ${result.errorMessage}")
         }
+
         is AuthRes.Success -> {
             analytics.logButtonClicked("Click: Continuar como invitado")
-            navigation.navigate(Routes.Home.route){
-                popUpTo(Routes.Login.route){
+            navigation.navigate(Routes.Home.route) {
+                popUpTo(Routes.Login.route) {
                     inclusive = true
                 }
             }

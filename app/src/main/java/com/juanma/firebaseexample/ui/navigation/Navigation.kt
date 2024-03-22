@@ -3,6 +3,7 @@ package com.juanma.firebaseexample.ui.navigation
 import android.content.Context
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -12,18 +13,21 @@ import com.google.firebase.analytics.logEvent
 import com.google.firebase.auth.FirebaseUser
 import com.juanma.firebaseexample.ui.screens.HomeScreen
 import com.juanma.firebaseexample.ui.screens.Screen
-import com.juanma.firebaseexample.ui.screens.auth.ForgotPasswordScreen
-import com.juanma.firebaseexample.ui.screens.auth.LoginScreen
-import com.juanma.firebaseexample.ui.screens.auth.SignUpScreen
-import com.juanma.firebaseexample.utils.AnalyticsManager
-import com.juanma.firebaseexample.utils.AuthManager
+import com.juanma.firebaseexample.ui.screens.auth.forgotpassscreen.ForgotPasswordScreen
+import com.juanma.firebaseexample.ui.screens.auth.loginscreen.LoginScreen
+import com.juanma.firebaseexample.ui.screens.auth.signinscreen.SignUpScreen
+import com.juanma.firebaseexample.data.network.AnalyticsManagerService
+import com.juanma.firebaseexample.data.network.AuthManagerService
+import com.juanma.firebaseexample.ui.screens.auth.loginscreen.LoginScreenViewModel
+import com.juanma.firebaseexample.util.AuthManager
 
 @Composable
 fun Navigation(
     context: Context,
-    navController: NavHostController = rememberNavController()
+    navController: NavHostController = rememberNavController(),
+    loginViewModel: LoginScreenViewModel
 ) {
-    val analytics: AnalyticsManager = AnalyticsManager(context)
+    val analytics: AnalyticsManagerService = AnalyticsManagerService(context)
     val authManager: AuthManager = AuthManager(context)
     val user: FirebaseUser? = authManager.getCurrentUser()
 
@@ -36,7 +40,8 @@ fun Navigation(
                 LoginScreen(
                     analytics = analytics,
                     auth = authManager,
-                    navigation = navController
+                    navController = navController,
+                    loginViewModel = loginViewModel
                 )
             }
             composable(Routes.Home.route) {

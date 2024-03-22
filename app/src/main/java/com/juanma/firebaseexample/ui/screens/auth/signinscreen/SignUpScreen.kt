@@ -1,4 +1,4 @@
-package com.juanma.firebaseexample.ui.screens.auth
+package com.juanma.firebaseexample.ui.screens.auth.signinscreen
 
 import android.content.Context
 import android.widget.Toast
@@ -36,17 +36,17 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.google.firebase.analytics.FirebaseAnalytics
+import com.juanma.firebaseexample.data.network.AnalyticsManagerService
+import com.juanma.firebaseexample.data.response.AuthRes
 import com.juanma.firebaseexample.ui.navigation.Routes
 import com.juanma.firebaseexample.ui.theme.Purple40
-import com.juanma.firebaseexample.utils.AnalyticsManager
-import com.juanma.firebaseexample.utils.AuthManager
-import com.juanma.firebaseexample.utils.AuthRes
+import com.juanma.firebaseexample.util.AuthManager
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SignUpScreen(
-    analytics: AnalyticsManager,
+    analytics: AnalyticsManagerService,
     auth: AuthManager,
     navigation: NavController) {
     analytics.logScreenView(screenName = Routes.SignUp.route)
@@ -122,7 +122,7 @@ private suspend fun signUp(
     email: String,
     password: String,
     auth: AuthManager,
-    analytics: AnalyticsManager,
+    analytics: AnalyticsManagerService,
     context: Context,
     navigation: NavController
 ) {
