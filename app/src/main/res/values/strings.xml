@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">Firebase Example</string>
-    <string name="default_web_client_id" translatable="false">998421320858-g25e48oq78rivnc5mh62oi0erd67i4md.apps.googleusercontent.com</string>
+    <string name="default_web_client_id" translatable="false">Coloca aqui tu web id de firebase</string>
 
     //Login Screen
     <string name="login_screen_title">Bienvenido</string>
