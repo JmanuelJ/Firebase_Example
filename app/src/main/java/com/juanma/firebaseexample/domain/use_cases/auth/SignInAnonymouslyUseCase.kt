@@ -1,10 +1,11 @@
 package com.juanma.firebaseexample.domain.use_cases.auth
 
 import com.juanma.firebaseexample.data.network.AuthManagerService
+import com.juanma.firebaseexample.domain.repository.AuthRepository
 import javax.inject.Inject
 
 class SignInAnonymouslyUseCase @Inject constructor(
-    private val authManagerService: AuthManagerService
+    private val repository: AuthRepository
 ) {
-    suspend operator fun invoke() = authManagerService.signInAnonymously()
+    suspend operator fun invoke() = repository.signInAnonymously()
 }

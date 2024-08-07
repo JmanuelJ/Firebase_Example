@@ -1,4 +1,40 @@
 <resources>
     <string name="app_name">Firebase Example</string>
     <string name="default_web_client_id" translatable="false">998421320858-g25e48oq78rivnc5mh62oi0erd67i4md.apps.googleusercontent.com</string>
+
+    //Login Screen
+    <string name="login_screen_title">Bienvenido</string>
+    <string name="login_screen_img_description">Image login</string>
+    <string name="login_screen_field_email_name">Correo</string>
+    <string name="login_screen_field_email_description">Image email text field</string>
+    <string name="login_screen_field_password_name">Contraseña</string>
+    <string name="login_screen_field_password_description">Image password text field</string>
+    <string name="login_screen_btn_forgot_password">Recupera tu contraseña</string>
+    <string name="login_screen_btn_forgot_password_description">Button to go to forgot password screen</string>
+    <string name="login_screen_btn_login_description">Button to go to home screen</string>
+    <string name="login_screen_btn_google_description">Button back</string>
+    <string name="login_screen_btn_anonymous_description">Button back</string>
+    <string name="login_screen_btn_ask_account">No tienes cuenta? </string>
+    <string name="login_screen_btn_create_account">Crea una aqui</string>
+    //Forgot Password Screen
+    <string name="forgot_screen_title">Recupera tu cuenta</string>
+    <string name="forgot_screen_field_email_name">Correo</string>
+    <string name="forgot_screen_field_email_description">Image email text field</string>
+    <string name="forgot_screen_btn_back_description">Button back forgot</string>
+    <string name="forgot_screen_btn_forgot_description">Button to go to forgot password</string>
+    <string name="forgot_screen_msg_forgot">Correo enviado</string>
+    //Sign Up Screen
+    <string name="signup_screen_title">Crea tu cuenta</string>
+    <string name="signup_screen_field_username_name">Nombre</string>
+    <string name="signup_screen_field_email_name">Correo</string>
+    <string name="signup_screen_field_email_description">Image email text field</string>
+    <string name="signup_screen_field_username_description">Image user name text field</string>
+    <string name="signup_screen_field_password_name">Contraseña</string>
+    <string name="signup_screen_field_password_description">Image password text field</string>
+    <string name="signup_screen_field_confirmpassword_name">Correo</string>
+    <string name="signup_screen_field_confirmpassword_description">Image eonfirm password text field</string>
+    <string name="signup_screen_btn_back_description">Button back sign up</string>
+    <string name="signup_screen_btn_signup_description">Button to go to sign up</string>
+    <string name="signup_screen_msg_create">Registro exitoso</string>
+
 </resources>
